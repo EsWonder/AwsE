@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Usuarios</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            font-size: 1.5rem;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        table th {
+            background-color: #007bff;
+            color: white;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        input[type="text"], input[type="email"], input[type="number"] {
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px;
+            font-size: 1rem;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script>
+        // Lista para almacenar los registros
+        const registros = [];
+
+        function registrarUsuario(event) {
+            event.preventDefault();
+
+            // Obtener los valores de los campos
+            const nombre = document.getElementById('nombre').value;
+            const correo = document.getElementById('correo').value;
+            const edad = document.getElementById('edad').value;
+
+            // Validar que no estén vacíos
+            if (nombre && correo && edad) {
+                // Agregar al arreglo
+                registros.push({ nombre, correo, edad });
+
+                // Limpiar los campos
+                document.getElementById('nombre').value = '';
+                document.getElementById('correo').value = '';
+                document.getElementById('edad').value = '';
+
+                // Actualizar la tabla
+                actualizarTabla();
+            } else {
+                alert('Por favor, completa todos los campos.');
+            }
+        }
+
+        function actualizarTabla() {
+            const tabla = document.getElementById('tabla-registros');
+            tabla.innerHTML = '';
+
+            registros.forEach((registro, index) => {
+                const fila = `
+                    <tr>
+                        <td>${registro.nombre}</td>
+                        <td>${registro.correo}</td>
+                        <td>${registro.edad}</td>
+                    </tr>
+                `;
+                tabla.innerHTML += fila;
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="navbar">Registro de Usuarios</div>
+    <div class="container">
+        <h2>Formulario de Registro</h2>
+        <form onsubmit="registrarUsuario(event)">
+            <input type="text" id="nombre" placeholder="Nombre" required>
+            <input type="email" id="correo" placeholder="Correo Electrónico" required>
+            <input type="number" id="edad" placeholder="Edad" required>
+            <button type="submit">Registrar</button>
+        </form>
+        
+        <h2>Lista de Usuarios Registrados</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Correo</th>
+                    <th>Edad</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-registros">
+                <!-- Las filas se agregarán dinámicamente aquí -->
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
