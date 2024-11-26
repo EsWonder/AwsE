@@ -1,4 +1,4 @@
-name: Deploy to EC2
+name: Deploy to Multiple EC2 Instances
 
 on:
   push:
@@ -13,18 +13,39 @@ jobs:
     - name: Check out the code
       uses: actions/checkout@v3
 
-    - name: Deploy to EC2
+    # Despliegue en la primera instancia
+    - name: Deploy to EC2 Instance 1
       uses: easingthemes/ssh-deploy@main
       env:
         SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-        REMOTE_HOST: ${{ secrets.HOST_DNS }}
+        REMOTE_HOST: ${{ secrets.INSTANCE_1_HOST }}
         REMOTE_USER: ${{ secrets.EC2_USER }}
         TARGET: ${{ secrets.TARGET_DIR }}
 
-    - name: Executing remote ssh commands using ssh key
+    - name: Executing remote ssh commands on Instance 1
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.HOST_DNS }}
+        host: ${{ secrets.INSTANCE_1_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          cd AwsE
+          git pull origin main
+          sudo mv index.html /var/www/html/
+
+    # Despliegue en la segunda instancia
+    - name: Deploy to EC2 Instance 2
+      uses: easingthemes/ssh-deploy@main
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+        REMOTE_HOST: ${{ secrets.INSTANCE_2_HOST }}
+        REMOTE_USER: ${{ secrets.EC2_USER }}
+        TARGET: ${{ secrets.TARGET_DIR }}
+
+    - name: Executing remote ssh commands on Instance 2
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.INSTANCE_2_HOST }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
