@@ -1,0 +1,33 @@
+name: Deploy to QA
+
+on:
+  push:
+    branches:
+      - QA
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out the code
+      uses: actions/checkout@v3
+
+    - name: Deploy to QA EC2
+      uses: easingthemes/ssh-deploy@main
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.QA_SSH_KEY }}
+        REMOTE_HOST: ${{ secrets.QA_HOST_DNS }}
+        REMOTE_USER: ${{ secrets.QA_USER }}
+        TARGET: ${{ secrets.QA_TARGET_DIR }}
+
+    - name: Executing remote ssh commands (QA)
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.QA_HOST_DNS }}
+        username: ${{ secrets.QA_USER }}
+        key: ${{ secrets.QA_SSH_KEY }}
+        script: |
+          cd AwsE
+          git pull origin QA
+          sudo mv index.html /var/www/html/

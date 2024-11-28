@@ -1,0 +1,36 @@
+name: Deploy to Production
+
+on:
+  pull_request:
+    branches:
+      - produccion
+    types:
+      - closed
+
+jobs:
+  deploy:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out the code
+      uses: actions/checkout@v3
+
+    - name: Deploy to Production EC2
+      uses: easingthemes/ssh-deploy@main
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.PROD_SSH_KEY }}
+        REMOTE_HOST: ${{ secrets.PROD_HOST_DNS }}
+        REMOTE_USER: ${{ secrets.PROD_USER }}
+        TARGET: ${{ secrets.PROD_TARGET_DIR }}
+
+    - name: Executing remote ssh commands (Production)
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.PROD_HOST_DNS }}
+        username: ${{ secrets.PROD_USER }}
+        key: ${{ secrets.PROD_SSH_KEY }}
+        script: |
+          cd AwsE
+          git pull origin produccion
+          sudo mv index.html /var/www/html/
